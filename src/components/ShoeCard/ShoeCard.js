@@ -5,6 +5,16 @@ import { COLORS, WEIGHTS } from '../../constants';
 import { formatPrice, pluralize, isNewShoe } from '../../utils';
 import Spacer from '../Spacer';
 
+
+const LabelStyles = {
+  'on-sale': {
+    background: COLORS.primary
+  },
+  'new-release': {
+    background: COLORS.secondary
+  },
+}
+
 const ShoeCard = ({
   slug,
   name,
@@ -36,19 +46,49 @@ const ShoeCard = ({
       <Wrapper>
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
+          { variant === 'on-sale' &&  <SaleFlag>Sale</SaleFlag>  }
+          { variant === 'new-release' && <NewFlag>Just Released!</NewFlag>   }
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price style={{
+            '--color': variant === 'on-sale' ? COLORS.gray[700] : undefined,
+            '--text-decoration': variant === 'on-sale' ? 'line-through' : undefined, 
+          }}>{formatPrice(price)}</Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          { variant === 'on-sale' && <SalePrice>{formatPrice(salePrice)}</SalePrice>  }
         </Row>
       </Wrapper>
     </Link>
   );
 };
+
+const Flag = styled.span`
+  color: ${COLORS.white};
+  white-space: nowrap;
+  border-radius: 4px;
+  padding: 6px 8px;
+
+  position: absolute;
+  right: 0;
+  margin: 12px -6px 0 0;
+
+
+  font-weight: 700;
+  font-size: 0.875rem;
+  font-family: 'Raleway';
+`;
+
+const SaleFlag = styled(Flag)`
+  background-color: ${COLORS.primary}
+`;
+
+const NewFlag = styled(Flag)`
+  background-color: ${COLORS.secondary}
+`;
 
 const Link = styled.a`
   text-decoration: none;
@@ -61,10 +101,15 @@ const ImageWrapper = styled.div`
   position: relative;
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  width: 100%;
+  border-radius: 16px 16px 4px 4px;
+`;
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Name = styled.h3`
@@ -72,7 +117,10 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  color: var(--color);
+  text-decoration: var(--text-decoration);
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
